@@ -22,15 +22,24 @@ const Index = () => {
 
   const fetchTools = async () => {
     setIsLoading(true);
-    const { data, error } = await supabase
-      .from("mcp_tools")
-      .select("*")
-      .in("status", ["approved", "pending"]);
+    try {
+      const { data, error } = await supabase
+        .from("mcp_tools")
+        .select("*")
+        .in("status", ["approved", "pending"]);
 
-    if (error) {
-      console.error("Error fetching tools:", error);
-    } else {
-      setTools(data || []);
+      if (error) {
+        console.error("Supabase error fetching tools:", {
+          message: error.message,
+          code: error.code,
+          details: error.details,
+        });
+      } else {
+        console.log(`Successfully fetched ${data?.length || 0} tools`);
+        setTools(data || []);
+      }
+    } catch (err) {
+      console.error("Exception fetching tools:", err);
     }
     setIsLoading(false);
   };
